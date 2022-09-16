@@ -1,5 +1,6 @@
 package com.pluralsight.calcengine;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class Main {
@@ -36,11 +37,23 @@ public class Main {
 
     private static void perfromOperation(String[] parts) {
         char opCode = opCodeFromString(parts[0]);
-        double leftVal = valueFromWord(parts[1]);
-        double rightVal = valueFromWord(parts[2]);
-        double result = execute(opCode, leftVal, rightVal);
+        if(opCode == 'w')
+            handleWhen(parts);
+        else {
+            double leftVal = valueFromWord(parts[1]);
+            double rightVal = valueFromWord(parts[2]);
+            double result = execute(opCode, leftVal, rightVal);
+            displayResult(opCode, leftVal, rightVal, result);
+        }
+    }
 
-        displayResult(opCode, leftVal, rightVal, result);
+    private static void handleWhen(String[] parts) {
+        LocalDate startDate = LocalDate.parse(parts[1]); // converts the inputted date to localdate format
+        long daysToAdd = (long) valueFromWord(parts[2]); // days to add
+        LocalDate newDate = startDate.plusDays(daysToAdd);
+        String output = String.format("%s plus %d days is %s", startDate, daysToAdd, newDate); // the "%s" automatically converts the date types to strings
+        System.out.println(output);
+
     }
 
     private static void displayResult(char opCode, double leftVal, double rightVal, double result) {
@@ -123,13 +136,17 @@ public class Main {
                 "five", "six", "seven", "eight", "nine"
         };
 
-        double value = 0d;
+        double value = -1d;
         for (int index = 0; index < numberWords.length; index++){
             if(word.equals(numberWords[index])) {
                 value = index;
                 break;
             }
         }
+
+        if(value == -1)
+            value = Double.parseDouble(word); // to handle numeric values inputted
+
 
         return value; // this gives numberic value that corresponds to the array
     }
